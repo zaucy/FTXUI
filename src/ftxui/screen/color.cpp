@@ -94,9 +94,14 @@ Color::Color(Palette256 index) : type_(ColorType::Palette256), red_(index) {
 /// @param red The quantity of red [0,255]
 /// @param green The quantity of green [0,255]
 /// @param blue The quantity of blue [0,255]
+/// @param alpha The quantity of alpha [0,255]
 /// @ingroup screen
-Color::Color(uint8_t red, uint8_t green, uint8_t blue)
-    : type_(ColorType::TrueColor), red_(red), green_(green), blue_(blue) {
+Color::Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
+    : type_(ColorType::TrueColor),
+      red_(red),
+      green_(green),
+      blue_(blue),
+      alpha_(alpha) {
   if (Terminal::ColorSupport() == Terminal::Color::TrueColor) {
     return;
   }
@@ -137,7 +142,53 @@ Color::Color(uint8_t red, uint8_t green, uint8_t blue)
 /// @ingroup screen
 // static
 Color Color::RGB(uint8_t red, uint8_t green, uint8_t blue) {
-  return {red, green, blue};
+  return RGBA(red, green, blue, 255);
+}
+
+/// @brief Build a Color from its RGBA representation.
+/// https://en.wikipedia.org/wiki/RGB_color_model
+/// @param red The quantity of red [0,255]
+/// @param green The quantity of green [0,255]
+/// @param blue The quantity of blue [0,255]
+/// @param alpha The quantity of alpha [0,255]
+/// @ingroup screen
+/// @see Color::RGB
+// static
+Color Color::RGBA(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
+  return {red, green, blue, alpha};
+}
+
+/// @brief Build a Color from its HSV representation.
+/// https://en.wikipedia.org/wiki/HSL_and_HSV
+///
+/// @param h The hue of the color [0,255]
+/// @param s The "colorfulness" [0,255].
+/// @param v The "Lightness" [0,255]
+/// @param alpha The quantity of alpha [0,255]
+/// @ingroup screen
+// static
+Color Color::HSVA(uint8_t h, uint8_t s, uint8_t v, uint8_t alpha) {
+  if (s == 0) {
+    return {0, 0, 0, alpha};
+  }
+
+  uint8_t region = h / 43;                                        // NOLINT
+  uint8_t remainder = (h - (region * 43)) * 6;                    // NOLINT
+  uint8_t p = (v * (255 - s)) >> 8;                               // NOLINT
+  uint8_t q = (v * (255 - ((s * remainder) >> 8))) >> 8;          // NOLINT
+  uint8_t t = (v * (255 - ((s * (255 - remainder)) >> 8))) >> 8;  // NOLINT
+
+  // clang-format off
+  switch (region) {                     // NOLINT
+    case 0: return Color(v,t,p, alpha); // NOLINT
+    case 1: return Color(q,v,p, alpha); // NOLINT
+    case 2: return Color(p,v,t, alpha); // NOLINT
+    case 3: return Color(p,q,v, alpha); // NOLINT
+    case 4: return Color(t,p,v, alpha); // NOLINT
+    case 5: return Color(v,p,q, alpha); // NOLINT
+  }                                     // NOLINT
+  // clang-format on
+  return {0, 0, 0, alpha};
 }
 
 /// @brief Build a Color from its HSV representation.
@@ -149,27 +200,7 @@ Color Color::RGB(uint8_t red, uint8_t green, uint8_t blue) {
 /// @ingroup screen
 // static
 Color Color::HSV(uint8_t h, uint8_t s, uint8_t v) {
-  if (s == 0) {
-    return {0, 0, 0};
-  }
-
-  uint8_t region = h / 43;                                        // NOLINT
-  uint8_t remainder = (h - (region * 43)) * 6;                    // NOLINT
-  uint8_t p = (v * (255 - s)) >> 8;                               // NOLINT
-  uint8_t q = (v * (255 - ((s * remainder) >> 8))) >> 8;          // NOLINT
-  uint8_t t = (v * (255 - ((s * (255 - remainder)) >> 8))) >> 8;  // NOLINT
-
-  // clang-format off
-  switch (region) {              // NOLINT
-    case 0: return Color(v,t,p); // NOLINT
-    case 1: return Color(q,v,p); // NOLINT
-    case 2: return Color(p,v,t); // NOLINT
-    case 3: return Color(p,q,v); // NOLINT
-    case 4: return Color(t,p,v); // NOLINT
-    case 5: return Color(v,p,q); // NOLINT
-  }                              // NOLINT
-  // clang-format on
-  return {0, 0, 0};
+  return HSVA(h, s, v, 255);
 }
 
 // static
