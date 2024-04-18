@@ -1,14 +1,19 @@
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("//bazel:copts.bzl", "copts")
 
+cc_library(
+    name = "color_info_sorted_2d",
+    visibility = ["//examples:__subpackages__"],
+    hdrs = ["color_info_sorted_2d.ipp"],
+)
+
 _EXAMPLES = [
     "border",
     "border_colored",
     "border_style",
     "canvas",
-    # "color_gallery",
-    # "color_info_palette256",
-    # "color_info_sorted_2d.ipp",
+    "color_gallery",
+    "color_info_palette256",
     "color_truecolor_HSV",
     "color_truecolor_RGB",
     "dbox",
@@ -44,5 +49,5 @@ _EXAMPLES = [
     name = example,
     copts = copts,
     srcs = ["{}.cpp".format(example)],
-    deps = ["//:ftxui"],
+    deps = ["//:ftxui", ":color_info_sorted_2d"],
 ) for example in _EXAMPLES]
