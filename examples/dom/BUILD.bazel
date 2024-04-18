@@ -1,0 +1,48 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("//bazel:copts.bzl", "copts")
+
+_EXAMPLES = [
+    "border",
+    "border_colored",
+    "border_style",
+    "canvas",
+    # "color_gallery",
+    # "color_info_palette256",
+    # "color_info_sorted_2d.ipp",
+    "color_truecolor_HSV",
+    "color_truecolor_RGB",
+    "dbox",
+    "gauge",
+    "gauge_direction",
+    "graph",
+    "gridbox",
+    "hflow",
+    "html_like",
+    "linear_gradient",
+    "package_manager",
+    "paragraph",
+    "separator",
+    "separator_style",
+    "size",
+    "spinner",
+    "style_blink",
+    "style_bold",
+    "style_color",
+    "style_dim",
+    "style_gallery",
+    "style_hyperlink",
+    "style_inverted",
+    "style_strikethrough",
+    "style_underlined",
+    "style_underlined_double",
+    "table",
+    "vbox_hbox",
+    "vflow",
+]
+
+[cc_binary(
+    name = example,
+    copts = copts,
+    srcs = ["{}.cpp".format(example)],
+    deps = ["//:ftxui"],
+) for example in _EXAMPLES]

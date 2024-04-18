@@ -16,6 +16,9 @@
 !flake.nix
 !ftxui.pc.in
 !iwyu.imp
+!MODULE.bazel
+!BUILD.bazel
+bazel-*
 
 # .github directory:
 !.github/**/*.yaml
@@ -56,3 +59,7 @@
 # tools directory:
 !tools/**/*.sh
 !tools/**/*.cpp
+
+# bazel directory:
+!bazel/**/*.bzl
+!bazel/**/*.bazel

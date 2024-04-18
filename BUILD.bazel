@@ -1,0 +1,28 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+load("//bazel:copts.bzl", "copts")
+
+cc_library(
+    name = "ftxui_internal",
+    copts = copts,
+    hdrs = glob(["src/**/*.hpp"]),
+    strip_include_prefix = "src",
+)
+
+cc_library(
+    name = "ftxui",
+    visibility = ["//visibility:public"],
+    copts = copts,
+    defines = select({
+        "@platforms//os:windows": [
+            "UNICODE",
+            "_UNICODE",
+        ],
+        "//conditions:default": [],
+    }),
+    hdrs = glob(["include/**/*.hpp"]),
+    srcs = glob(["src/**/*.cpp"], exclude = ["src/**/*_test.cpp"]),
+    strip_include_prefix = "include",
+    deps = [
+        ":ftxui_internal",
+    ],
+)
